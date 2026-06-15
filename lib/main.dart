@@ -11,81 +11,114 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Profile Card App',
-      home: const ProfilePage(),
+      title: 'Grade Calculator',
+      home: const GradeCalculatorPage(),
     );
   }
 }
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class GradeCalculatorPage extends StatefulWidget {
+  const GradeCalculatorPage({super.key});
 
-  void showMessage(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Welcome to my Flutter Profile!'),
-      ),
-    );
+  @override
+  State<GradeCalculatorPage> createState() => _GradeCalculatorPageState();
+}
+
+class _GradeCalculatorPageState extends State<GradeCalculatorPage> {
+  final TextEditingController grade1Controller = TextEditingController();
+  final TextEditingController grade2Controller = TextEditingController();
+  final TextEditingController grade3Controller = TextEditingController();
+
+  String result = '';
+  String status = '';
+
+  void calculateAverage() {
+    if (grade1Controller.text.isEmpty ||
+        grade2Controller.text.isEmpty ||
+        grade3Controller.text.isEmpty) {
+      setState(() {
+        result = 'Please fill all fields';
+        status = '';
+      });
+      return;
+    }
+
+    double grade1 = double.tryParse(grade1Controller.text) ?? 0;
+    double grade2 = double.tryParse(grade2Controller.text) ?? 0;
+    double grade3 = double.tryParse(grade3Controller.text) ?? 0;
+
+    double average = (grade1 + grade2 + grade3) / 3;
+
+    setState(() {
+      result = average.toStringAsFixed(2);
+
+      if (average >= 50) {
+        status = 'Kalon';
+      } else {
+        status = 'Duhet permiresim';
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile Card'),
+        title: const Text('Grade Calculator'),
         centerTitle: true,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Card(
-            elevation: 8,
-            child: Container(
-              width: 350,
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.person,
-                        size: 80,
-                        color: Colors.blue,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-                  const Text(
-                    'Denart Gervalla',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Student Developer',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  const Text(
-                    'I am passionate about programming, technology and software development.',
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () => showMessage(context),
-                    child: const Text('Show Message'),
-                  ),
-                ],
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            TextField(
+              controller: grade1Controller,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Grade 1',
+                border: OutlineInputBorder(),
               ),
             ),
-          ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: grade2Controller,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Grade 2',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: grade3Controller,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Grade 3',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: calculateAverage,
+              child: const Text('Calculate'),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Average: $result',
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              status,
+              style: const TextStyle(
+                fontSize: 20,
+                color: Colors.blue,
+              ),
+            ),
+          ],
         ),
       ),
     );
